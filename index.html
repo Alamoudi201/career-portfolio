@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منشئ البورتفوليو المهني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#16202A;
+    --paper:#F3F5F1;
+    --panel:#FFFFFF;
+    --accent:#2F6F5E;
+    --accent-dark:#234F43;
+    --gold:#C9A24B;
+    --muted:#66707B;
+    --line:#DCE1DE;
+    --danger:#B3413A;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  a{color:var(--accent-dark);}
+  h1,h2,h3{margin:0 0 8px;font-weight:700;}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  /* ---------- header ---------- */
+  header.top{
+    background:var(--ink);
+    color:#EDEFEC;
+    padding:22px 20px 26px;
+  }
+  header.top .wrap{max-width:1200px;margin:0 auto;}
+  header.top h1{font-size:clamp(20px,3.2vw,28px);color:#fff;}
+  header.top p{margin:6px 0 0;color:#B9C2BE;max-width:640px;font-size:14.5px;}
+
+  /* ---------- layout ---------- */
+  .app{max-width:1200px;margin:0 auto;padding:18px 16px 100px;}
+  .tabs{display:none;gap:8px;margin-bottom:14px;}
+  .tabs button{
+    flex:1;padding:11px;border:1px solid var(--line);background:var(--panel);
+    border-radius:var(--radius);font-family:inherit;font-size:14.5px;font-weight:600;
+    color:var(--muted);cursor:pointer;
+  }
+  .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  .grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:20px;align-items:start;}
+  @media (max-width:920px){
+    .grid{grid-template-columns:1fr;}
+    .tabs{display:flex;}
+    .pane{display:none;}
+    .pane.active{display:block;}
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .card h2{font-size:16.5px;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px;}
+  .card h2 small{display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:3px;}
+
+  label{display:block;font-size:13px;color:var(--muted);margin:0 0 5px;font-weight:500;}
+  input[type=text],input[type=email],input[type=tel],input[type=url],textarea{
+    width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:8px;
+    font-family:inherit;font-size:14.5px;background:#FBFCFB;color:var(--ink);
+    margin-bottom:12px;
+  }
+  input:focus,textarea:focus,button:focus-visible{
+    outline:2px solid var(--accent);outline-offset:1px;
+  }
+  textarea{resize:vertical;min-height:70px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:520px){.row2{grid-template-columns:1fr;}}
+
+  .entry{border:1px dashed var(--line);border-radius:8px;padding:12px;margin-bottom:10px;position:relative;background:#FAFBFA;}
+  .entry .remove{
+    position:absolute;top:8px;left:8px;background:none;border:none;color:var(--danger);
+    font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;
+  }
+  .add-btn{
+    background:none;border:1px solid var(--accent);color:var(--accent-dark);
+    padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13.5px;font-weight:600;
+    cursor:pointer;
+  }
+  .add-btn:hover{background:#EAF2EF;}
+
+  /* ---------- preview ---------- */
+  .preview-sticky{position:sticky;top:16px;}
+  .pv-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:0;overflow:hidden;
+  }
+  .pv-head{background:var(--ink);color:#fff;padding:26px 22px;}
+  .pv-head h3{font-size:22px;color:#fff;margin-bottom:2px;}
+  .pv-head .role{color:var(--gold);font-size:14px;font-weight:600;}
+  .pv-head .contacts{margin-top:12px;font-size:12.5px;color:#C7CEC9;display:flex;flex-wrap:wrap;gap:10px;}
+  .pv-body{padding:20px 22px;}
+  .pv-section{margin-bottom:18px;}
+  .pv-section:last-child{margin-bottom:0;}
+  .pv-section h4{font-size:12.5px;letter-spacing:.02em;color:var(--accent-dark);margin-bottom:8px;font-weight:700;}
+  .pv-section p{font-size:13.8px;color:#333;margin:0;}
+  .pv-skill{
+    display:inline-block;background:#EAF2EF;color:var(--accent-dark);
+    padding:4px 10px;border-radius:20px;font-size:12.5px;margin:0 5px 5px 0;
+  }
+  .pv-item{margin-bottom:10px;}
+  .pv-item:last-child{margin-bottom:0;}
+  .pv-item .t1{font-size:13.8px;font-weight:600;color:var(--ink);}
+  .pv-item .t2{font-size:12.5px;color:var(--muted);}
+  .pv-item .t3{font-size:13px;color:#3B4450;margin-top:3px;}
+  .pv-empty{color:var(--muted);font-size:13px;font-style:normal;}
+
+  /* ---------- bottom action bar ---------- */
+  .actionbar{
+    position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+    padding:12px 16px;display:flex;gap:10px;justify-content:center;z-index:40;
+  }
+  .actionbar .wrap{max-width:1200px;width:100%;display:flex;gap:10px;justify-content:flex-end;}
+  .btn{
+    padding:12px 20px;border-radius:8px;border:none;font-family:inherit;font-size:14.5px;
+    font-weight:700;cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-ghost{background:none;border:1px solid var(--line);color:var(--ink);}
+  #saveStatus{align-self:center;font-size:12.5px;color:var(--muted);margin-left:auto;margin-right:8px;}
+
+  /* ---------- modal ---------- */
+  .modal-bg{
+    display:none;position:fixed;inset:0;background:rgba(22,32,42,.55);z-index:60;
+    align-items:center;justify-content:center;padding:16px;
+  }
+  .modal-bg.show{display:flex;}
+  .modal{
+    background:#fff;border-radius:12px;max-width:420px;width:100%;padding:24px;text-align:center;
+  }
+  .modal h3{font-size:17px;margin-bottom:6px;}
+  .modal p.hint{font-size:12.5px;color:var(--muted);margin:0 0 16px;}
+  #qrHolder{display:flex;justify-content:center;margin:14px 0;}
+  #qrHolder img,#qrHolder canvas{border:6px solid #fff;box-shadow:0 0 0 1px var(--line);border-radius:6px;}
+  .linkbox{
+    display:flex;gap:6px;margin-bottom:14px;
+  }
+  .linkbox input{margin-bottom:0;font-size:12.5px;}
+  .modal .btn{width:100%;margin-top:6px;}
+  .close-x{
+    position:absolute;top:14px;left:14px;background:none;border:none;font-size:18px;
+    cursor:pointer;color:var(--muted);
+  }
+  .modal{position:relative;}
+
+  /* ---------- viewer mode ---------- */
+  .viewer-wrap{max-width:640px;margin:26px auto 60px;padding:0 16px;}
+  .viewer-cta{
+    max-width:640px;margin:0 auto 0;padding:0 16px;display:flex;justify-content:flex-end;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>منشئ البورتفوليو المهني</h1>
+    <p>أدخل بياناتك على اليمين وشاهد بورتفوليوك يتكوّن مباشرة، ثم شارك النتيجة برابط أو رمز QR — مجانًا ودون الحاجة لأي خبرة تقنية.</p>
+  </div>
+</header>
+
+<!-- ============ VIEWER MODE (shown when a shared link is opened) ============ -->
+<div id="viewerMode" style="display:none;">
+  <div class="viewer-cta">
+    <button class="btn btn-ghost" id="makeMyOwnBtn" style="margin-top:16px;">إنشاء بورتفوليو خاص بي</button>
+  </div>
+  <div class="viewer-wrap">
+    <div class="pv-card" id="viewerCard"></div>
+  </div>
+</div>
+
+<!-- ============ BUILDER MODE ============ -->
+<div id="builderMode" class="app">
+
+  <div class="tabs">
+    <button id="tabEdit" class="active">التحرير</button>
+    <button id="tabPreview">المعاينة</button>
+  </div>
+
+  <div class="grid">
+    <!-- FORM PANE -->
+    <div class="pane active" id="paneForm">
+
+      <div class="card">
+        <h2>البيانات الأساسية</h2>
+        <label for="f_name">الاسم الكامل</label>
+        <input type="text" id="f_name" placeholder="مثال: محمد العمودي">
+        <label for="f_title">المسمى الوظيفي / التخصص</label>
+        <input type="text" id="f_title" placeholder="مثال: مهندس برمجيات">
+        <label for="f_bio">نبذة مختصرة</label>
+        <textarea id="f_bio" placeholder="اكتب نبذة قصيرة عن خبرتك وأهدافك المهنية"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>معلومات التواصل</h2>
+        <div class="row2">
+          <div><label for="f_email">البريد الإلكتروني</label><input type="email" id="f_email"></div>
+          <div><label for="f_phone">رقم الهاتف</label><input type="tel" id="f_phone"></div>
+        </div>
+        <div class="row2">
+          <div><label for="f_linkedin">رابط LinkedIn</label><input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/..."></div>
+          <div><label for="f_website">موقع شخصي / GitHub</label><input type="url" id="f_website"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>المهارات <small>افصل بين كل مهارة وأخرى بفاصلة</small></h2>
+        <input type="text" id="f_skills" placeholder="مثال: إدارة المشاريع، Python، التصميم الجرافيكي">
+      </div>
+
+      <div class="card">
+        <h2>الخبرات العملية</h2>
+        <div id="expList"></div>
+        <button class="add-btn" id="addExp" type="button">+ إضافة خبرة</button>
+      </div>
+
+      <div class="card">
+        <h2>المشاريع / نماذج الأعمال</h2>
+        <div id="projList"></div>
+        <button class="add-btn" id="addProj" type="button">+ إضافة مشروع</button>
+      </div>
+
+      <div class="card">
+        <h2>التعليم</h2>
+        <div id="eduList"></div>
+        <button class="add-btn" id="addEdu" type="button">+ إضافة مؤهل</button>
+      </div>
+
+      <div class="card">
+        <h2>توصيات <small>اختياري</small></h2>
+        <div id="recList"></div>
+        <button class="add-btn" id="addRec" type="button">+ إضافة توصية</button>
+      </div>
+
+    </div>
+
+    <!-- PREVIEW PANE -->
+    <div class="pane" id="panePreview">
+      <div class="preview-sticky">
+        <div class="pv-card">
+          <div class="pv-head">
+            <h3 id="pv_name">اسمك يظهر هنا</h3>
+            <div class="role" id="pv_title">المسمى الوظيفي</div>
+            <div class="contacts" id="pv_contacts"></div>
+          </div>
+          <div class="pv-body" id="pv_body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="actionbar" id="actionbar">
+  <div class="wrap">
+    <span id="saveStatus"></span>
+    <button class="btn btn-ghost" id="resetBtn">تفريغ النموذج</button>
+    <button class="btn btn-primary" id="shareBtn">حفظ ومشاركة</button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="close-x" id="closeModal">✕</button>
+    <h3>بورتفوليوك جاهز للمشاركة</h3>
+    <p class="hint">انسخ الرابط أو استخدم رمز QR للوصول إليه من أي جهاز.</p>
+    <div class="linkbox">
+      <input type="text" id="shareLink" readonly>
+      <button class="btn btn-primary" id="copyLinkBtn" style="white-space:nowrap;">نسخ</button>
+    </div>
+    <div id="qrHolder"></div>
+    <button class="btn btn-ghost" id="closeModal2">إغلاق</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- helpers to build repeatable entries ---------------- */
+  function makeEntry(container, fields, removeLabel){
+    var div = document.createElement('div');
+    div.className = 'entry';
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'remove'; btn.textContent = 'إزالة';
+    btn.onclick = function(){ div.remove(); renderPreview(); };
+    div.appendChild(btn);
+    var titleSpacer = document.createElement('div'); titleSpacer.style.height='8px';
+    div.appendChild(titleSpacer);
+    fields.forEach(function(f){
+      var lab = document.createElement('label'); lab.textContent = f.label;
+      var inp;
+      if(f.type === 'textarea'){ inp = document.createElement('textarea'); }
+      else { inp = document.createElement('input'); inp.type = f.type || 'text'; }
+      inp.dataset.field = f.key;
+      inp.placeholder = f.placeholder || '';
+      inp.addEventListener('input', renderPreview);
+      div.appendChild(lab); div.appendChild(inp);
+    });
+    container.appendChild(div);
+    return div;
+  }
+
+  function readEntries(containerId, keys){
+    var out = [];
+    document.querySelectorAll('#'+containerId+' .entry').forEach(function(entry){
+      var obj = {};
+      var any = false;
+      keys.forEach(function(k){
+        var el = entry.querySelector('[data-field="'+k+'"]');
+        var v = el ? el.value.trim() : '';
+        if(v) any = true;
+        obj[k] = v;
+      });
+      if(any) out.push(obj);
+    });
+    return out;
+  }
+
+  document.getElementById('addExp').onclick = function(){
+    makeEntry(document.getElementById('expList'), [
+      {key:'role', label:'المسمى الوظيفي', placeholder:'مثال: مدير مشروع'},
+      {key:'company', label:'الجهة', placeholder:'اسم الشركة'},
+      {key:'period', label:'الفترة', placeholder:'مثال: 2022 - الآن'},
+      {key:'desc', label:'الوصف', type:'textarea'}
+    ]);
+  };
+  document.getElementById('addProj').onclick = function(){
+    makeEntry(document.getElementById('projList'), [
+      {key:'title', label:'عنوان المشروع'},
+      {key:'desc', label:'الوصف', type:'textarea'},
+      {key:'link', label:'رابط (اختياري)', type:'url'}
+    ]);
+  };
+  document.getElementById('addEdu').onclick = function(){
+    makeEntry(document.getElementById('eduList'), [
+      {key:'degree', label:'الدرجة العلمية / الشهادة'},
+      {key:'org', label:'الجهة'},
+      {key:'year', label:'السنة'}
+    ]);
+  };
+  document.getElementById('addRec').onclick = function(){
+    makeEntry(document.getElementById('recList'), [
+      {key:'name', label:'الاسم'},
+      {key:'text', label:'نص التوصية', type:'textarea'}
+    ]);
+  };
+
+  /* ---------------- example placeholder data (illustrative only) ---------------- */
+  function loadExample(){
+    document.getElementById('f_name').value = 'محمد العمودي';
+    document.getElementById('f_title').value = '(مثال) أدخل مسمّاك الوظيفي هنا';
+    document.getElementById('f_bio').value = 'هذه نبذة توضيحية فقط — استبدلها بنبذتك الحقيقية المأخوذة من ملفك التعريفي.';
+    document.getElementById('f_linkedin').value = 'https://www.linkedin.com/in/mohammedal-amoudi';
+    document.getElementById('f_skills').value = 'مهارة أولى، مهارة ثانية، مهارة ثالثة';
+    makeEntry(document.getElementById('expList'), expFields()).querySelectorAll('input,textarea').forEach(function(){});
+    var e = document.querySelectorAll('#expList .entry')[0];
+    e.querySelector('[data-field="role"]').value = 'المسمى الوظيفي (مثال)';
+    e.querySelector('[data-field="company"]').value = 'اسم الجهة';
+    e.querySelector('[data-field="period"]').value = '20xx - الآن';
+    e.querySelector('[data-field="desc"]').value = 'وصف مختصر للمهام والإنجازات في هذا الدور.';
+  }
+  function expFields(){
+    return [
+      {key:'role', label:'المسمى الوظيفي'},
+      {key:'company', label:'الجهة'},
+      {key:'period', label:'الفترة'},
+      {key:'desc', label:'الوصف', type:'textarea'}
+    ];
+  }
+
+  /* ---------------- gather + render preview ---------------- */
+  function gatherData(){
+    return {
+      name: document.getElementById('f_name').value.trim(),
+      title: document.getElementById('f_title').value.trim(),
+      bio: document.getElementById('f_bio').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      linkedin: document.getElementById('f_linkedin').value.trim(),
+      website: document.getElementById('f_website').value.trim(),
+      skills: document.getElementById('f_skills').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
+      experience: readEntries('expList', ['role','company','period','desc']),
+      projects: readEntries('projList', ['title','desc','link']),
+      education: readEntries('eduList', ['degree','org','year']),
+      recommendations: readEntries('recList', ['name','text'])
+    };
+  }
+
+  function esc(s){
+    var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML;
+  }
+
+  function buildPortfolioHTML(data){
+    var contacts = [];
+    if(data.email) contacts.push('<span>'+esc(data.email)+'</span>');
+    if(data.phone) contacts.push('<span>'+esc(data.phone)+'</span>');
+    if(data.linkedin) contacts.push('<a href="'+esc(data.linkedin)+'" target="_blank" style="color:#EADFC0;">LinkedIn</a>');
+    if(data.website) contacts.push('<a href="'+esc(data.website)+'" target="_blank" style="color:#EADFC0;">الموقع الشخصي</a>');
+
+    var body = '';
+
+    if(data.bio){
+      body += '<div class="pv-section"><h4>نبذة</h4><p>'+esc(data.bio)+'</p></div>';
+    }
+    if(data.skills && data.skills.length){
+      body += '<div class="pv-section"><h4>المهارات</h4><div>' +
+        data.skills.map(function(s){return '<span class="pv-skill">'+esc(s)+'</span>';}).join('') +
+        '</div></div>';
+    }
+    if(data.experience && data.experience.length){
+      body += '<div class="pv-section"><h4>الخبرات العملية</h4>' +
+        data.experience.map(function(e){
+          return '<div class="pv-item"><div class="t1">'+esc(e.role)+(e.company?' — '+esc(e.company):'')+'</div>'+
+                 (e.period?'<div class="t2">'+esc(e.period)+'</div>':'')+
+                 (e.desc?'<div class="t3">'+esc(e.desc)+'</div>':'')+'</div>';
+        }).join('') + '</div>';
+    }
+    if(data.projects && data.projects.length){
+      body += '<div class="pv-section"><h4>المشاريع</h4>' +
+        data.projects.map(function(p){
+          return '<div class="pv-item"><div class="t1">'+(p.link?'<a href="'+esc(p.link)+'" target="_blank">'+esc(p.title)+'</a>':esc(p.title))+'</div>'+
+                 (p.desc?'<div class="t3">'+esc(p.desc)+'</div>':'')+'</div>';
+        }).join('') + '</div>';
+    }
+    if(data.education && data.education.length){
+      body += '<div class="pv-section"><h4>التعليم</h4>' +
+        data.education.map(function(e){
+          return '<div class="pv-item"><div class="t1">'+esc(e.degree)+'</div><div class="t2">'+esc(e.org)+(e.year?' · '+esc(e.year):'')+'</div></div>';
+        }).join('') + '</div>';
+    }
+    if(data.recommendations && data.recommendations.length){
+      body += '<div class="pv-section"><h4>توصيات</h4>' +
+        data.recommendations.map(function(r){
+          return '<div class="pv-item"><div class="t3">"'+esc(r.text)+'"</div><div class="t2">— '+esc(r.name)+'</div></div>';
+        }).join('') + '</div>';
+    }
+    if(!body){
+      body = '<p class="pv-empty">أضف بياناتك على اليمين لتظهر هنا مباشرة.</p>';
+    }
+
+    return {
+      headHTML: '<div class="pv-head"><h3>'+esc(data.name || 'اسمك يظهر هنا')+'</h3>'+
+                 '<div class="role">'+esc(data.title || 'المسمى الوظيفي')+'</div>'+
+                 '<div class="contacts">'+contacts.join('')+'</div></div>',
+      bodyHTML: body
+    };
+  }
+
+  function renderPreview(){
+    var data = gatherData();
+    var parts = buildPortfolioHTML(data);
+    document.getElementById('pv_name').textContent = data.name || 'اسمك يظهر هنا';
+    document.getElementById('pv_title').textContent = data.title || 'المسمى الوظيفي';
+    var contactsWrap = document.getElementById('pv_contacts');
+    contactsWrap.innerHTML = parts.headHTML.match(/<div class="contacts">([\s\S]*?)<\/div>/)[1];
+    document.getElementById('pv_body').innerHTML = parts.bodyHTML;
+  }
+
+  document.getElementById('paneForm').addEventListener('input', renderPreview);
+
+  /* ---------------- mobile tabs ---------------- */
+  var tabEdit = document.getElementById('tabEdit'), tabPreview = document.getElementById('tabPreview');
+  var paneForm = document.getElementById('paneForm'), panePreview = document.getElementById('panePreview');
+  tabEdit.onclick = function(){
+    tabEdit.classList.add('active'); tabPreview.classList.remove('active');
+    paneForm.classList.add('active'); panePreview.classList.remove('active');
+  };
+  tabPreview.onclick = function(){
+    tabPreview.classList.add('active'); tabEdit.classList.remove('active');
+    panePreview.classList.add('active'); paneForm.classList.remove('active');
+  };
+
+  /* ---------------- reset ---------------- */
+  document.getElementById('resetBtn').onclick = function(){
+    if(!confirm('سيتم تفريغ كل الحقول، هل تريد المتابعة؟')) return;
+    document.querySelectorAll('#builderMode input, #builderMode textarea').forEach(function(el){ el.value=''; });
+    ['expList','projList','eduList','recList'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
+    renderPreview();
+  };
+
+  /* ---------------- save & share ---------------- */
+  function uid(){
+    return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  }
+
+  function showModal(link){
+    document.getElementById('shareLink').value = link;
+    document.getElementById('qrHolder').innerHTML = '';
+    try{
+      new QRCode(document.getElementById('qrHolder'), {
+        text: link, width: 176, height: 176,
+        correctLevel: QRCode.CorrectLevel.L
+      });
+    }catch(e){
+      document.getElementById('qrHolder').innerHTML = '<p class="pv-empty">تعذّر توليد رمز QR لهذا الرابط (قد يكون طويلًا جدًا).</p>';
+    }
+    document.getElementById('modalBg').classList.add('show');
+  }
+  document.getElementById('closeModal').onclick = function(){ document.getElementById('modalBg').classList.remove('show'); };
+  document.getElementById('closeModal2').onclick = function(){ document.getElementById('modalBg').classList.remove('show'); };
+  document.getElementById('copyLinkBtn').onclick = function(){
+    var inp = document.getElementById('shareLink');
+    inp.select(); inp.setSelectionRange(0,99999);
+    try{
+      navigator.clipboard.writeText(inp.value);
+      document.getElementById('copyLinkBtn').textContent = 'تم النسخ ✓';
+      setTimeout(function(){ document.getElementById('copyLinkBtn').textContent = 'نسخ'; }, 1600);
+    }catch(e){ document.execCommand('copy'); }
+  };
+
+  document.getElementById('shareBtn').onclick = async function(){
+    var data = gatherData();
+    if(!data.name){
+      document.getElementById('saveStatus').textContent = 'الرجاء إدخال الاسم على الأقل قبل المشاركة.';
+      return;
+    }
+    document.getElementById('saveStatus').textContent = 'جارٍ الحفظ...';
+    var base = location.origin + location.pathname;
+    var id = uid();
+    var savedToCloud = false;
+
+    if(window.storage && typeof window.storage.set === 'function'){
+      try{
+        var res = await window.storage.set('portfolio:'+id, JSON.stringify(data), true);
+        if(res) savedToCloud = true;
+      }catch(e){ savedToCloud = false; }
+    }
+
+    if(savedToCloud){
+      var link = base + '?id=' + id;
+      document.getElementById('saveStatus').textContent = '';
+      showModal(link);
+    } else {
+      // fallback for static hosting (GitHub Pages / Netlify): encode data directly in the link
+      try{
+        var packed = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))));
+        var link2 = base + '?data=' + packed;
+        document.getElementById('saveStatus').textContent = '';
+        showModal(link2);
+      }catch(e){
+        document.getElementById('saveStatus').textContent = 'تعذّر إنشاء رابط المشاركة.';
+      }
+    }
+  };
+
+  /* ---------------- viewer mode (opening a shared link) ---------------- */
+  async function tryLoadFromUrl(){
+    var params = new URLSearchParams(location.search);
+    var id = params.get('id');
+    var packedData = params.get('data');
+    var data = null;
+
+    if(id && window.storage && typeof window.storage.get === 'function'){
+      try{
+        var r = await window.storage.get('portfolio:'+id, true);
+        if(r && r.value) data = JSON.parse(r.value);
+      }catch(e){ data = null; }
+    }
+    if(!data && packedData){
+      try{
+        data = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(packedData)))));
+      }catch(e){ data = null; }
+    }
+    if(data){
+      document.getElementById('builderMode').style.display = 'none';
+      document.getElementById('actionbar').style.display = 'none';
+      document.getElementById('viewerMode').style.display = 'block';
+      var parts = buildPortfolioHTML(data);
+      document.getElementById('viewerCard').innerHTML = parts.headHTML + '<div class="pv-body">'+parts.bodyHTML+'</div>';
+    }
+  }
+  document.getElementById('makeMyOwnBtn').onclick = function(){
+    location.href = location.origin + location.pathname;
+  };
+
+  /* ---------------- init ---------------- */
+  tryLoadFromUrl().then(function(){
+    if(document.getElementById('viewerMode').style.display === 'none' || !document.getElementById('viewerMode').style.display){
+      // builder mode: seed with one empty row per section for guidance, then render
+      renderPreview();
+    }
+  });
+})();
+</script>
+</body>
+</html>
